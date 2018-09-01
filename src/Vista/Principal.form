@@ -137,10 +137,13 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoveDirectoryActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton1">
+            <Component class="javax.swing.JButton" name="btnChangeTime">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Modificar horas"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnChangeTimeActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

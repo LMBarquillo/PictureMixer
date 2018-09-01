@@ -23,8 +23,8 @@ public class Directorio {
      * Esto se vuelve útil cuando has usado varios dispositivos con distintas horas.
      * @param minutos 
      */
-    public void modificarTiempo(int horas, int minutos) {
-        this.modificador += (horas * 60 * 60 * 1000) + (minutos * 60 * 1000);    // a milisegundos
+    public void modificarTiempo(int horas) {
+        this.modificador = (horas * 60 * 60 * 1000);    // a milisegundos
     }
 
     public String getRuta() {

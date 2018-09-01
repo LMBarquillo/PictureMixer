@@ -37,7 +37,7 @@ public class Mezclador {
                 // Generamos un nuevo nombre con la ruta completa, según su fecha y un número consecutivo de 4 cifras
                 String nombre = String.format("%s%s%s_%04d%s", 
                         salida,
-                        System.getProperty("os.name").startsWith("Win") ? "\\" : "/",
+                        System.getProperty("file.separator"),
                         sdf.format(archivos.get(i).lastModified()),
                         i,
                         getFileExtension(archivos.get(i))

@@ -7,8 +7,9 @@ package Vista;
 
 import Controlador.Mezclador;
 import Modelos.Directorio;
+import Modelos.UpdateTableListener;
+import java.io.File;
 import java.util.ArrayList;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -18,11 +19,10 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Luismi
  */
-public class Principal extends javax.swing.JFrame {
+public class Principal extends javax.swing.JFrame implements UpdateTableListener {
     private ArrayList<Directorio> directorios;
     private DefaultTableModel modeloTabla;
-    
-    private DefaultListModel<String> listaDirectorios;
+    private File ultimaRuta;
 
     /**
      * Creates new form Principal
@@ -50,7 +50,7 @@ public class Principal extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         btnAddDirectory = new javax.swing.JButton();
         btnRemoveDirectory = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnChangeTime = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tfOutputPath = new javax.swing.JTextField();
@@ -108,8 +108,13 @@ public class Principal extends javax.swing.JFrame {
         });
         jPanel3.add(btnRemoveDirectory);
 
-        jButton1.setText("Modificar horas");
-        jPanel3.add(jButton1);
+        btnChangeTime.setText("Modificar horas");
+        btnChangeTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeTimeActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btnChangeTime);
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.LINE_END);
 
@@ -161,8 +166,10 @@ public class Principal extends javax.swing.JFrame {
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fc.setDialogTitle("Selecciona la carpeta de salida");
         fc.setApproveButtonText("Seleccionar");
+        if(ultimaRuta != null && ultimaRuta.isDirectory()) fc.setCurrentDirectory(ultimaRuta);
         if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             tfOutputPath.setText(fc.getSelectedFile().toString());
+            ultimaRuta = fc.getSelectedFile();
         }        
     }//GEN-LAST:event_btnSelectDirectoryActionPerformed
 
@@ -201,6 +208,15 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnGoWorkActionPerformed
 
+    private void btnChangeTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeTimeActionPerformed
+        int pos = tableDirectories.getSelectedRow();
+        if(pos >= 0) {
+            ModificarHoras mhDialog = new ModificarHoras(this,true,directorios.get(pos),this);
+            mhDialog.setLocationRelativeTo(null);
+            mhDialog.setVisible(true);
+        }
+    }//GEN-LAST:event_btnChangeTimeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -232,10 +248,10 @@ public class Principal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddDirectory;
+    private javax.swing.JButton btnChangeTime;
     private javax.swing.JButton btnGoWork;
     private javax.swing.JButton btnRemoveDirectory;
     private javax.swing.JButton btnSelectDirectory;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -263,13 +279,14 @@ public class Principal extends javax.swing.JFrame {
         btnSelectDirectory.setEnabled(activar);
     }
 
-    private void actualizarTabla() {
+    public void actualizarTabla() {
         String columnas[] = {"Ruta","Mod.Tiempo"};
         String datos[][] = new String[directorios.size()][columnas.length];
         
         for(int i = 0; i < directorios.size(); i++) {
+            int horas = (int) (directorios.get(i).getModificador() / 1000 / 60 / 60);
             datos[i][0] = directorios.get(i).getRuta();
-            datos[i][1] = String.valueOf(directorios.get(i).getModificador());
+            datos[i][1] = String.format("%02d:00", horas);
         }
         
         modeloTabla = new DefaultTableModel(datos,columnas);

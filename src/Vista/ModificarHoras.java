@@ -5,18 +5,29 @@
  */
 package Vista;
 
+import Modelos.Directorio;
+import Modelos.UpdateTableListener;
+
 /**
  *
  * @author Luismi
  */
 public class ModificarHoras extends javax.swing.JDialog {
-
+    private Directorio directorio;
+    private UpdateTableListener listener;
     /**
      * Creates new form ModificarHoras
      */
-    public ModificarHoras(java.awt.Frame parent, boolean modal) {
+    public ModificarHoras(java.awt.Frame parent, boolean modal, Directorio dir, UpdateTableListener listener) {
         super(parent, modal);
         initComponents();
+        pack();
+        this.directorio = dir;
+        this.listener = listener;
+        // Establecemos los valores actuales
+        int horas = (int) (dir.getModificador() / 1000 / 60 / 60);
+        
+        spinnerHour.setValue(horas);
     }
 
     /**
@@ -29,9 +40,9 @@ public class ModificarHoras extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        spinnerHour = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnAceptar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Modificar horas");
@@ -39,63 +50,37 @@ public class ModificarHoras extends javax.swing.JDialog {
 
         jLabel1.setText("Diferencia de");
         getContentPane().add(jLabel1);
-        getContentPane().add(jSpinner1);
+
+        spinnerHour.setModel(new javax.swing.SpinnerNumberModel(0, -23, 23, 1));
+        getContentPane().add(spinnerHour);
 
         jLabel2.setText("horas");
         getContentPane().add(jLabel2);
 
-        jButton1.setText("Aceptar");
-        getContentPane().add(jButton1);
+        btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnAceptar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ModificarHoras.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ModificarHoras.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ModificarHoras.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ModificarHoras.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ModificarHoras dialog = new ModificarHoras(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        int horas = (int) spinnerHour.getValue();
+        
+        this.directorio.modificarTiempo(horas);
+        this.listener.actualizarTabla();
+        
+        dispose();
+    }//GEN-LAST:event_btnAceptarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnAceptar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner spinnerHour;
     // End of variables declaration//GEN-END:variables
 }
