@@ -6,18 +6,24 @@
 package Vista;
 
 import Controlador.Mezclador;
-import Modelos.Archivo;
+import Modelos.Directorio;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Luismi
  */
 public class Principal extends javax.swing.JFrame {
-    private ArrayList<Archivo> archivos;
+    private ArrayList<Directorio> directorios;
+    private DefaultTableModel modeloTabla;
+    
     private DefaultListModel<String> listaDirectorios;
+
     /**
      * Creates new form Principal
      */
@@ -44,13 +50,14 @@ public class Principal extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         btnAddDirectory = new javax.swing.JButton();
         btnRemoveDirectory = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tfOutputPath = new javax.swing.JTextField();
         btnSelectDirectory = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listDirectories = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tableDirectories = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Picture Mixer");
@@ -101,6 +108,9 @@ public class Principal extends javax.swing.JFrame {
         });
         jPanel3.add(btnRemoveDirectory);
 
+        jButton1.setText("Modificar horas");
+        jPanel3.add(jButton1);
+
         jPanel2.add(jPanel3, java.awt.BorderLayout.LINE_END);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -123,9 +133,21 @@ public class Principal extends javax.swing.JFrame {
         jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel5.setLayout(new java.awt.BorderLayout());
 
-        jScrollPane1.setViewportView(listDirectories);
+        tableDirectories.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tableDirectories.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(tableDirectories);
 
-        jPanel5.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        jPanel5.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         jPanel2.add(jPanel5, java.awt.BorderLayout.CENTER);
 
@@ -150,44 +172,43 @@ public class Principal extends javax.swing.JFrame {
         fc.setDialogTitle("Selecciona la carpeta para añadir");
         fc.setApproveButtonText("Seleccionar");
         if(fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            listaDirectorios.addElement(fc.getSelectedFile().toString());
+            Directorio d = new Directorio(fc.getSelectedFile().toString(),0);
+            directorios.add(d);
+            actualizarTabla();
         }     
     }//GEN-LAST:event_btnAddDirectoryActionPerformed
 
     private void btnRemoveDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveDirectoryActionPerformed
-        int selected[] = listDirectories.getSelectedIndices();
-        for(int i = selected.length-1; i >= 0; i--) {
-            listaDirectorios.removeElementAt(i);
+        int pos = tableDirectories.getSelectedRow();
+        if(pos >= 0) {
+            directorios.remove(pos);
+            actualizarTabla();
         }
     }//GEN-LAST:event_btnRemoveDirectoryActionPerformed
 
     private void btnGoWorkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoWorkActionPerformed
-        // De momento sin hilos, en la siguiente versión lo paso a segundo plano.
-        activarControles(false);
-        Mezclador mez = new Mezclador();
-        for(int i=0; i<listaDirectorios.size(); i++) {
-            mez.addDirectorio(listaDirectorios.get(i));
+        if(directorios.size() > 0) {
+            // De momento sin hilos, en la siguiente versión lo paso a segundo plano.
+            activarControles(false);
+            Mezclador mez = new Mezclador();
+            for(Directorio d : directorios) {
+                mez.addDirectorio(d);
+            }
+            mez.mezclar(tfOutputPath.getText());
+            activarControles(true);
+        } else {
+            JOptionPane.showMessageDialog(this,"Por favor, añada alguna ruta a la lista.","Lista vacía",JOptionPane.WARNING_MESSAGE);
         }
-        mez.mezclar(tfOutputPath.getText());
-        activarControles(true);
     }//GEN-LAST:event_btnGoWorkActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+        /* Set the System look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -214,6 +235,7 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JButton btnGoWork;
     private javax.swing.JButton btnRemoveDirectory;
     private javax.swing.JButton btnSelectDirectory;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -221,25 +243,36 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelCurrentFile;
-    private javax.swing.JList<String> listDirectories;
     private javax.swing.JProgressBar pbProgress;
+    private javax.swing.JTable tableDirectories;
     private javax.swing.JTextField tfOutputPath;
     // End of variables declaration//GEN-END:variables
 
     private void initExtras() {
-        archivos = new ArrayList<Archivo>();
-        listaDirectorios = new DefaultListModel<String>();
-        
-        listDirectories.setModel(listaDirectorios);
+        directorios = new ArrayList<Directorio>();
+        actualizarTabla();
     }
     
     private void activarControles(boolean activar) {
-        listDirectories.setEnabled(activar);
+        tableDirectories.setEnabled(activar);
         btnAddDirectory.setEnabled(activar);
         btnRemoveDirectory.setEnabled(activar);
         tfOutputPath.setEnabled(activar);
         btnSelectDirectory.setEnabled(activar);
+    }
+
+    private void actualizarTabla() {
+        String columnas[] = {"Ruta","Mod.Tiempo"};
+        String datos[][] = new String[directorios.size()][columnas.length];
+        
+        for(int i = 0; i < directorios.size(); i++) {
+            datos[i][0] = directorios.get(i).getRuta();
+            datos[i][1] = String.valueOf(directorios.get(i).getModificador());
+        }
+        
+        modeloTabla = new DefaultTableModel(datos,columnas);
+        tableDirectories.setModel(modeloTabla);
     }
 }

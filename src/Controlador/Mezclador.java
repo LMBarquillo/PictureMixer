@@ -6,6 +6,7 @@
 package Controlador;
 
 import Modelos.Archivo;
+import Modelos.Directorio;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,15 +42,14 @@ public class Mezclador {
                         i,
                         getFileExtension(archivos.get(i))
                 );
-                // System.out.println(nombre);                 
+                System.out.println(nombre);                 
                         
                 // Copiamos el archivo
                 copiarArchivo(archivos.get(i), new File(nombre));
             }
         } else {
             return LISTA_VACIA;
-        }
-        
+        }        
         return CORRECTO;
     }
     
@@ -57,17 +57,17 @@ public class Mezclador {
         this.archivos.add(archivo);
     }
     
-    public void addDirectorio(String ruta) {
-        File directorio = new File(ruta);
+    public void addDirectorio(Directorio dir) {
+        File directorio = new File(dir.getRuta());
         if(directorio.isDirectory()) {
             String archivos[] = directorio.list();
             for(String s : archivos) {
-                String archivo = String.format("%s%s%s",
-                        ruta,
+                String nombreArchivo = String.format("%s%s%s",
+                        dir.getRuta(),
                         System.getProperty("os.name").startsWith("Win") ? "\\" : "/",
                         s
                 );
-                Archivo a = new Archivo(archivo);
+                Archivo a = new Archivo(nombreArchivo,dir.getModificador());
                 if(a.isFile()) addArchivo(a);
             }
         }

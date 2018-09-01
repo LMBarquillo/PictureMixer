@@ -12,14 +12,23 @@ import java.io.File;
  * @author Luismi
  */
 public class Archivo extends File implements Comparable<File> {
-    public Archivo(String pathname) {
+    private long modificador;
+    
+    public Archivo(String pathname, long modificador) {
         super(pathname);
+        this.modificador = modificador;
+    }
+
+    public long getModificado() {
+        return this.lastModified() + this.modificador;
     }
 
     @Override
     public int compareTo(File o) {
-        if(this.lastModified() < o.lastModified()) return -1;
-        else if(this.lastModified() > o.lastModified()) return 1;
-        else return 0;
+        if(o instanceof Archivo) {
+            if(this.getModificado() < ((Archivo) o).getModificado()) return -1;
+            else if(this.getModificado() > ((Archivo) o).getModificado()) return 1;
+            else return 0;    
+        } else return super.compareTo(o);
     }    
 }
